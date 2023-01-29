@@ -16,13 +16,15 @@ cv2.setMouseCallback('ROI', POINTS)
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 count=0
 while True:
-    frame=stream.read()
+    ret,frame=cap.read()
+    if not ret:
+        break
 #    count += 1
 #    if count % 3 != 0:
 #        continue
     
     frame=cv2.resize(frame,(1020,500))
-    results = model(roi)
+    results = model(frame)
     for index, row in results.pandas().xyxy[0].iterrows():
         x1 = int(row['xmin'])
         y1 = int(row['ymin'])
@@ -33,5 +35,5 @@ while True:
     cv2.imshow("ROI",frame)
     if cv2.waitKey(1)&0xFF==27:
         break
-stream.release()
+cap.release()
 cv2.destroyAllWindows()
